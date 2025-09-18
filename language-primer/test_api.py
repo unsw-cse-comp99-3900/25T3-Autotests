@@ -9,8 +9,6 @@ def create_group(client, name="Test Group", member_names=None):
     )
     return resp
 
-@pytest.mark.api
-@pytest.mark.points(1)
 def test_get_students_ok(client):
     create_group(client)
     res = client.get("/api/students")
@@ -25,9 +23,6 @@ def test_get_students_ok(client):
         assert student["id"] not in seen_ids
         seen_ids.add(student["id"])
 
-
-@pytest.mark.api
-@pytest.mark.points(1)
 def testcreate_group_and_retrieve_members(client):
     create_resp = create_group(client, name="Group Alpha", member_names=["Alice", "Charlie"]) 
     assert create_resp.status_code == 201
@@ -51,9 +46,6 @@ def testcreate_group_and_retrieve_members(client):
     assert isinstance(group.get("members"), list)
     assert all(isinstance(m.get("id"), int) and isinstance(m.get("name"), str) for m in group["members"])
 
-
-@pytest.mark.api
-@pytest.mark.points(1)
 def test_add_member_to_group_and_prevent_duplicates(client):
     create_resp = create_group(client, name="Group Beta", member_names=["Alice"]) 
     assert create_resp.status_code == 201
@@ -76,9 +68,6 @@ def test_add_member_to_group_and_prevent_duplicates(client):
     dup_resp = client.put(f"/api/groups/{group_id}/add", json={"studentId": data[0]['id']})
     assert dup_resp.status_code in (400, 409)
 
-
-@pytest.mark.api
-@pytest.mark.points(1)
 def test_delete_group_and_followup_404(client):
     create_resp = create_group(client, name="Group Gamma", member_names=["Alice"]) 
     assert create_resp.status_code == 201
@@ -95,9 +84,6 @@ def test_delete_group_and_followup_404(client):
     del_again_resp = client.delete(f"/api/groups/{group_id}")
     assert del_again_resp.status_code == 404
 
-
-@pytest.mark.api
-@pytest.mark.points(1)
 def test_validation_and_edge_cases(client):
     # Invalid payloads
     for body in [
